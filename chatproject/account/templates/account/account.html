@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+    <div class="container mt-5">
+        <h2>Account</h2>
+        <p>Welcome, {{ request.user.username }}!</p>
+        <ul>
+            <li><a href="{% url 'password_change' %}">Change Password</a></li>
+            <li><a href="{% url 'profile' %}">View Profile</a></li>
+        </ul>
+
+
+        <h3>Chat Rooms</h3>
+        <ul>
+            {% for chat_room in user_chat_rooms %}
+                <li><a href="{% url 'chat_room' room_id=chat_room.chatroom.id %}">{{ chat_room.chatroom.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock %}

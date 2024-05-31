@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "strict": true,
+        "jsx": "react",
+        "outDir": "./static/js",
+        "rootDir": "./static/ts"
+    }
+}

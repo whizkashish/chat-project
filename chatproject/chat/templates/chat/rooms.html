@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Chat Room: {{ room.name }}</h2>
+    {% if room.is_one_to_one %}
+        <p>One-to-one chat between {{ participants.0.user.username }} and {{ participants.1.user.username }}</p>
+    {% else %}
+        <p>Created by: {{ room.created_by.username }}</p>
+    {% endif %}
+    <div id="chat-log" class="border p-3" style="height: 300px; overflow-y: scroll;" data-room-id="{{ room.id }}">
+        {% for message in messages %}
+            <p>{{ message.user.username }}: {{ message.content }}</p>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+        <input id="chat-message-input" type="text" class="form-control" placeholder="Type your message here...">
+        <button id="chat-message-submit" class="btn btn-primary mt-2">Send</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer-scripts %}
+<script src="{% static 'chat/js/chat-bundle.js' %}"></script>
+{% endblock  %}
