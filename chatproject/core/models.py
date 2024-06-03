@@ -30,16 +30,6 @@ class ChatRoom(TimestampedModel):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_chat_rooms')
     is_group = models.BooleanField(default=False)
 
-    def __str__(self):
-        if self.is_one_to_one:
-            participants = self.participants.all()
-            return f"One-to-one chat between {participants[0].username} and {participants[1].username}"
-        return self.name if self.name else "Group Chat"
-
-    @property
-    def is_one_to_one(self):
-        return not self.is_group and self.participants.count() == 2
-
 class ChatRoomUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
@@ -63,3 +53,15 @@ class Profile(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     address = models.CharField(max_length=255, blank=True)
     zip_code = models.CharField(max_length=10, blank=True)
+    @property
+    def is_complete(self):
+        # Define your logic to check if the profile is complete
+        return bool(self.date_of_birth and self.gender and self.address and self.zip_code and self.image)
+
+class Notifications(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, null=True)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_notifications',null=True)
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, null=True)
+    content = models.TextField(null=True)
+    is_read = models.BooleanField(default=False)

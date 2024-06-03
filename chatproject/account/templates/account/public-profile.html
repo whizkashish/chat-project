@@ -1,0 +1,18 @@
+<!-- templates/account/profile.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ user.username }}'s Profile</h2>
+    <a href="{% url 'create_one_to_one_chat' user.username %}" class="btn btn-primary mt-3">Start Chat</a>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>First Name:</strong> {{ user.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+    <p><strong>Date of Birth:</strong> {{ user.profile.date_of_birth }}</p>
+    <p><strong>Gender:</strong> {{ user.profile.gender }}</p>
+    <p><strong>Address:</strong> {{ user.profile.address }}</p>
+    <p><strong>Country:</strong> {{ user.profile.country }}</p>
+    <p><strong>State:</strong> {{ user.profile.state }}</p>
+    <p><strong>Zip Code:</strong> {{ user.profile.zip_code }}</p>
+    <p><img src="{{ user.profile.image.url }}" alt="Profile Picture" class="img-fluid"></p>
+</div>
+{% endblock %}

@@ -4,8 +4,8 @@ from asyncio import sleep
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 
-from core.models import ChatRoom, Message
-
+from core.models import ChatRoom, Message, Notifications
+connected_users = {}
 class ChartConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
@@ -17,7 +17,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = f'chat_{self.room_id}'
-
+        user_id = self.scope['user'].id
+        connected_users[user_id] = self.channel_name
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -26,6 +27,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
+        user_id = self.scope['user'].id
+        del connected_users[user_id]
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -37,7 +40,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = self.scope['user']
 
         room = await self.get_room(self.room_id)
-        await self.save_message(room, user, message)
+        saved_message = await self.save_message(room, user, message)
+        await self.create_notification(room, user, message, saved_message)  # Create notification
 
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -64,3 +68,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, room, user, message):
         return Message.objects.create(room=room, user=user, content=message)
+    
+    @database_sync_to_async
+    def create_notification(self, room, user, message, saved_message):
+        # Create a notification for each user in the room except the sender
+        users_in_room = room.chatroomuser_set.exclude(user=user)
+        for recipient in users_in_room:
+            if recipient.user.id not in connected_users:
+                Notifications.objects.create(room=room, user=recipient.user, sender=user, content=message, message=saved_message)

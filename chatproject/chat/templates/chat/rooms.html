@@ -1,16 +1,23 @@
+<!-- templates/chat/group_chat_room.html -->
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
 <div class="container">
-    <h2>Chat Room: {{ room.name }}</h2>
-    {% if room.is_one_to_one %}
-        <p>One-to-one chat between {{ participants.0.user.username }} and {{ participants.1.user.username }}</p>
-    {% else %}
-        <p>Created by: {{ room.created_by.username }}</p>
-    {% endif %}
+    <div id="current-user" data-user-id="{{ request.user.username }}"></div>
+    <h2>Chat Room</h2>
+    
     <div id="chat-log" class="border p-3" style="height: 300px; overflow-y: scroll;" data-room-id="{{ room.id }}">
-        {% for message in messages %}
-            <p>{{ message.user.username }}: {{ message.content }}</p>
+        {% for message in chat_messages %}
+            <div class="{% if message.user == request.user %}text-right{% else %}text-left{% endif %}">
+                <p class="chat-message {% if message.user == request.user %}chat-message-right{% else %}chat-message-left{% endif %}">
+                    {% if message.user == request.user %}
+                    {{ message.content }}</strong>
+                    {% else %}
+                    <a href="{% url 'profile' message.user.username %}"><strong>{{ message.user.username }}</strong></a>: {{ message.content }}
+                    {% endif %}
+                    
+                </p>
+            </div>
         {% endfor %}
     </div>
     <div class="form-group">
@@ -22,4 +29,4 @@
 
 {% block footer-scripts %}
 <script src="{% static 'chat/js/chat-bundle.js' %}"></script>
-{% endblock  %}
+{% endblock %}
