@@ -1,21 +1,7 @@
-Here's a sample README file for your chat project repository. This will help guide users on how to set up and run your project.
-
-### README.md
-
 ```markdown
 # Chat Project
 
 This is a chat application built with Django, Celery, Redis, and PostgreSQL. It supports real-time notifications and messaging.
-
-## Table of Contents
-
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
@@ -103,18 +89,6 @@ CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 ### Access the Application
 
 Once the containers are running, you can access the application at `http://localhost:8000`.
-
-### Access pgAdmin 4
-
-To connect to the PostgreSQL database using pgAdmin 4:
-
-1. Open pgAdmin 4.
-2. Create a new server with the following details:
-   - Name: `chat_project_db`
-   - Host: `localhost`
-   - Port: `5432`
-   - Username: `devuser`
-   - Password: `changeme`
 
 ### Running Celery
 
