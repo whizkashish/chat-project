@@ -12,8 +12,10 @@ from .forms import ProfileUpdateForm
 @login_required
 def account_view(request):
     user_chat_rooms = ChatRoomUser.objects.filter(user=request.user)
+    user_list = User.objects.exclude(id=request.user.id).exclude(is_superuser=True, is_staff=True)
     return render(request, 'account/account.html',{
-        'user_chat_rooms': user_chat_rooms
+        'user_chat_rooms': user_chat_rooms,
+        'user_list' : user_list
     })
 
 @login_required
@@ -36,6 +38,7 @@ def notification_list(request):
     user_notifications = Notifications.objects.filter(user=request.user, is_read=False)
     notifications_data = [
         {
+            'id' : notification.id,
             'message': notification.content,
             'link': f'/chat/chat_room/{notification.room.id}/',  # Adjust link based on your URL structure
             'icon': '/static/images/default-icon.png'  # Optional: add an icon field

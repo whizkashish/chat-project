@@ -9,13 +9,26 @@
             <li><a href="{% url 'profile' %}">View Profile</a></li>
         </ul>
 
-
+        {% if user_chat_rooms %}
         <h3>Chat Rooms</h3>
         <ul>
             {% for chat_room in user_chat_rooms %}
                 <li><a href="{% url 'chat_room' room_id=chat_room.chatroom.id %}">{{ chat_room.chatroom.name }}</a></li>
             {% endfor %}
         </ul>
+        {% endif %}
+
+        {% if user_list %}
+        <h1>User List</h1>
+        <ul>
+            {% for user in user_list %}
+                <li>
+                    {{ user.username }}
+                        <a href="{% url 'create_one_to_one_chat' user.username %}">Start Chat</a>
+                </li>
+            {% endfor %}
+         </ul>
+         {% endif %}
     </div>
 </section>
 {% endblock %}

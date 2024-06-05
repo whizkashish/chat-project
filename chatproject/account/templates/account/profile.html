@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 {% load static %}
 {% block content %}
 <section>
@@ -12,10 +13,11 @@
                         {% if form_field.name == 'image' %}
                             <div class="form-group">
                                 <!-- Render image input field manually -->
-                                
-                                {% if user.profile.image %}
+                                {% if user.profile.image and user.profile.image.url %}
+                                    {% if user.profile.image.url|file_exists %}
                                     <!-- Display currently uploaded image -->
                                     <img src="{{ user.profile.image.url }}" class="img-thumbnail mt-2" style="max-height: 200px;">
+                                    {% endif %}
                                 {% else %}
                                     <!-- If no image is uploaded, show a default image -->
                                     <img src="{% static 'images/default_profile.jpg' %}" class="img-thumbnail mt-2" style="max-height: 200px;">

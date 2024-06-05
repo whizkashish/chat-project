@@ -28,12 +28,13 @@ function displayBrowserNotification(notification) {
             body: notification.message,
             icon: notification.icon || '/static/images/default-icon.png'  // Optional: add an icon
         });
-
+        
         // Handle notification click event
         newNotification.onclick = function(event) {
+            
             event.preventDefault();  // Prevent the browser from focusing the Notification's tab
-            // Redirect to the appropriate URL when the notification is clicked
-            window.open(notification.link, '_blank');  // Open link in a new tab
+            markNotificationAsRead(notification.id, notification.link);
+           
         };
     } else if (Notification.permission !== 'denied') {
         // Request permission to show notifications
@@ -41,7 +42,6 @@ function displayBrowserNotification(notification) {
             if (permission === 'granted') {
                 // Call displayBrowserNotification again after permission is granted
                 displayBrowserNotification(notification);
-                markNotificationAsRead(notification.id, notification.link);
             }
         });
     }
@@ -50,7 +50,7 @@ function displayBrowserNotification(notification) {
 
 // Mark a notification as read
 function markNotificationAsRead(notificationId, link) {
-    fetch(`/notifications/mark_as_read/${notificationId}/`, {
+    fetch(`/account/notifications/mark_as_read/${notificationId}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -60,8 +60,9 @@ function markNotificationAsRead(notificationId, link) {
     })
     .then(response => response.json())
     .then(data => {
-        // Redirect to the appropriate URL after marking as read
-        window.open(link);  // Open link in a new tab
+        debugger;
+         // Redirect to the appropriate URL when the notification is clicked
+         window.location.href = link;  // Open link in a new tab
     })
     .catch(error => console.error('Error marking notification as read:', error));
 }

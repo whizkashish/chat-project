@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+redis_host = os.getenv('REDIS_HOST', 'redis')
+redis_port = os.getenv('REDIS_PORT', '6379')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-3w8b@invjxff_&yt=0x*pjb@um(q3)i$_d)=d+_k8+@x!4&lxa'
-
+BASE_URL = 'http://localhost:8000'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -81,8 +83,11 @@ WSGI_APPLICATION = 'chatproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": 'django.db.backends.postgresql',
+        "HOST": os.environ.get('DB_HOST'),
+        "NAME": os.environ.get('DB_NAME'),
+        "USER": os.environ.get('DB_USER'),
+        "PASSWORD": os.environ.get('DB_PASS'),
     }
 }
 
@@ -120,15 +125,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / "collectstatic"
+
+STATIC_URL = '/static/'
+MEDIA_URL = '/files/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-
-MEDIA_ROOT = BASE_DIR / "uploads"
-
-MEDIA_URL = "/files/"
+MEDIA_ROOT = '/vol/web/media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -138,8 +141,24 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
+            'hosts': [(redis_host, 6379)],
         },
     },
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# settings.py
+
+# Redis configuration for Celery
+
+CELERY_BROKER_URL = f'redis://{redis_host}:{redis_port}'  # For Docker Desktop on Windows/macOS
+# Or use 'redis://localhost:6379/0' if localhost works
+CELERY_RESULT_BACKEND = f'redis://{redis_host}:{redis_port}'
+
+
+# Celery settings
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
