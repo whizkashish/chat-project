@@ -1,4 +1,4 @@
-```markdown
+
 # Chat Project
 
 This is a chat application built with Django, Celery, Redis, and PostgreSQL. It supports real-time notifications and messaging.
