@@ -2,16 +2,16 @@ from django.http import JsonResponse
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
-from django.contrib.auth.forms import UserCreationForm
+
 from django.contrib.auth.decorators import login_required
 from core.models import ChatRoom, ChatRoomUser, Profile, Notifications
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import ProfileUpdateForm
+from .forms import ProfileUpdateForm, CustomUserCreationForm
 
 @login_required
 def account_view(request):
-    user_chat_rooms = ChatRoomUser.objects.filter(user=request.user)
+    user_chat_rooms = ChatRoomUser.objects.filter(user=request.user,chatroom__is_group = True)
     user_list = User.objects.exclude(id=request.user.id).exclude(is_superuser=True, is_staff=True)
     return render(request, 'account/account.html',{
         'user_chat_rooms': user_chat_rooms,
@@ -25,12 +25,12 @@ def profile_view(request, username):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'account/register.html', {'form': form})
 
 @login_required

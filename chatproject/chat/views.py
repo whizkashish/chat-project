@@ -30,6 +30,7 @@ def create_group_chat_room(request):
     return render(request, 'chat/create_group_room.html', {'users': users})
 
 @login_required
+@check_profile_complete
 def create_one_to_one_chat_room(request, username):
     user2 = get_object_or_404(User, username=username)
     name = get_one_to_one_group_name(request.user.username,user2.username)
@@ -41,6 +42,7 @@ def create_one_to_one_chat_room(request, username):
     return redirect('chat_room', room_id=room.id)
 
 @login_required
+@check_profile_complete
 def chat_room(request, room_id):
     room = get_object_or_404(ChatRoom.objects.filter(deleted_at__isnull=True), id=room_id)
     messages = room.messages.filter(deleted_at__isnull=True).order_by('created_at')

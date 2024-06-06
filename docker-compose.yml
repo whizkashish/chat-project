@@ -6,6 +6,8 @@ services:
         - DEV=true
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     volumes:
       - ./chatproject:/chatproject
       - dev-static-data:/vol/web
@@ -32,6 +34,8 @@ services:
       - db
     ports:
       - "5050:80"
+    volumes:
+      - dev-pg-admin:/var/lib/pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
@@ -76,3 +80,4 @@ volumes:
   dev-db-data:
   dev-static-data:
   dev-cache-data:
+  dev-pg-admin:

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Membership</h1>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Pro Membership -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Pro Membership</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title text-center">$10/month</h4>
+                    <ul>
+                        <li>Access to Pro features</li>
+                        <li>Priority support</li>
+                        <li>Monthly updates</li>
+                    </ul>
+                    <div class="text-center">
+                        {% if user.membership.membership_type == 'Pro' %}
+                        <button>Active</button>
+                        {% else %}
+                        <button class="btn btn-primary" onclick="createCheckoutSession('pro')">Subscribe to Pro</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Premium Membership -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Premium Membership</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title text-center">$20/month</h4>
+                    <ul>
+                        <li>All Pro features</li>
+                        <li>Exclusive Premium content</li>
+                        <li>Advanced analytics</li>
+                    </ul>
+                    <div class="text-center">
+                        {% if user.membership.membership_type == 'Pro' %}
+                        <button class="btn btn-success" id="upgrade-button" onclick="upgradeMembership()">Upgrade to Premium</button>
+                        {% else %}
+                        <button class="btn btn-primary" onclick="createCheckoutSession('premium')">Subscribe to Premium</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block footer-scripts %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('{{ publishable_key }}');
+    function createCheckoutSession(membershipType) {
+        fetch("{% url 'create_checkout_session' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({
+                membership_type: membershipType
+            }),
+        }).then(function (response) {
+            return response.json();
+        }).then(function (sessionId) {
+            return stripe.redirectToCheckout({ sessionId: sessionId.id });
+        }).then(function (result) {
+            if (result.error) {
+                alert(result.error.message);
+            }
+        }).catch(function (error) {
+            console.error("Error:", error);
+        });
+    }
+
+    function upgradeMembership() {
+        fetch("{% url 'upgrade_membership' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+        }).then(function (response) {
+            return response.json();
+        }).then(function (result) {
+            if (result.status === 'success') {
+                alert("Membership upgraded successfully");
+                location.reload();
+            } else {
+                alert(result.error);
+            }
+        }).catch(function (error) {
+            console.error("Error:", error);
+        });
+    }
+</script>
+{% endblock %}
