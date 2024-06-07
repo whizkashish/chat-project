@@ -1,0 +1,17 @@
+<!-- blog_detail.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ blog.title }}</h1>
+            <img src="{{ blog.featured_image.url }}" class="img-fluid" alt="{{ blog.title }}">
+            <p>{{ blog.content| safe }}</p>
+        </div>
+        <div class="col-md-4">
+            <!-- Sidebar content (e.g., related posts, categories, etc.) -->
+        </div>
+    </div>
+</div>
+{% endblock %}

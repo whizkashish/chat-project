@@ -34,7 +34,7 @@ class ChatRoom(TimestampedModel):
 class ChatRoomUser(TimestampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
-    joined_at = models.DateTimeField(timezone.now())
+    joined_at = models.DateTimeField(default= timezone.now)
 
     class Meta:
         unique_together = ('user', 'chatroom')
@@ -78,7 +78,7 @@ class Membership(TimestampedModel):
     stripe_customer_id = models.CharField(max_length=40, default=False)
     stripe_subscription_id = models.CharField(max_length=40, default=False)
     membership_type = models.CharField(max_length=30, choices=MEMBERSHIP_CHOICES, default='Free')
-    start_date = models.DateTimeField(default = timezone.now())
+    start_date = models.DateTimeField(default = timezone.now)
     end_date = models.DateTimeField(default= datetime.now() + timedelta(days=1))
     is_active = models.BooleanField(default=True)
 
