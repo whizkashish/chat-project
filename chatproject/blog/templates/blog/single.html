@@ -6,7 +6,9 @@
     <div class="row">
         <div class="col-md-8">
             <h1>{{ blog.title }}</h1>
+			{% if post.featured_image and post.featured_image.url %}
             <img src="{{ blog.featured_image.url }}" class="img-fluid" alt="{{ blog.title }}">
+			{% endif %}
             <p>{{ blog.content| safe }}</p>
         </div>
         <div class="col-md-4">

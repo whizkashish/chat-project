@@ -7,7 +7,9 @@
         {% for post in blogs %}
         <div class="col-md-4">
             <div class="card mb-4">
+				{% if post.featured_image and post.featured_image.url %}
                 <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}">
+				{% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ post.title }}</h5>
                     <a href="{% url 'blog_detail' post.slug %}" class="btn btn-primary">Read More</a>

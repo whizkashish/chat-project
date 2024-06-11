@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 redis_host = os.getenv('REDIS_HOST', 'redis')
@@ -37,6 +38,11 @@ LOGIN_REDIRECT_URL = '/account/'
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
+    'rest_framework.authtoken',
+    # 'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
+    'channels',
     'daphne',
     'django_ckeditor_5',
     'dal',
@@ -64,6 +70,21 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    # "http://localhost:3000",
+]
+
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.TokenAuthentication',
+#     ),
+# }
+
+# SIMPLE_JWT = {
+#     "AUTH_HEADER_TYPES": ("Bearer", ),
+# }
 
 ROOT_URLCONF = 'chatproject.urls'
 
@@ -157,6 +178,10 @@ CHANNEL_LAYERS = {
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
 
 # settings.py
 
@@ -173,16 +198,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
-# Tinymce settings
-TINYMCE_DEFAULT_CONFIG = {
-    "height": "500px",
-    "width": "100%",
-    "menubar": "file edit view insert format tools table help",
-    "plugins": "advlist autolink lists link image charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor colorpicker textpattern",
-    "toolbar1": "undo redo | bold italic underline | fontselect fontsizeselect | forecolor backcolor",
-    "toolbar2": "alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | preview code | fullscreen",
-    "custom_undo_redo_levels": 10,
-}
+CKEDITOR_5_CUSTOM_CSS = 'css/ckeditor5/admin_dark_mode_fix.css'
 
 customColorPalette = [
     {"color": "hsl(4, 90%, 58%)", "label": "Red"},
@@ -341,3 +357,7 @@ CKEDITOR_5_CONFIGS = {
 }
 # Configure CKEditor settings
 CKEDITOR_5_CUSTOM_JS_URL = 'https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js'
+
+SPECTACULAR_SETTINGS = {
+    'COMPONENT_SPLIT_REQUEST': True,
+}
