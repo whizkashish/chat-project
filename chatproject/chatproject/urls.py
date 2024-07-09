@@ -9,6 +9,8 @@ from django.urls import path, include
 from django_ckeditor_5 import views as ckeditor_views
 
 urlpatterns = [
+    
+    path('admin/blog/', include('blog.adminurl')),
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
     path('chat/', include('chat.urls')),

@@ -2,13 +2,24 @@
 from core.models import ChatRoom, ChatRoomUser, Message
 from django.contrib.auth.models import User
 from rest_framework import generics, permissions, authentication
-from .serializers import MessageSerializer, ChatRoomSerializer
+from .serializers import MessageSerializer, ChatRoomSerializer, ChatRoomUserSerializer
 
 class ChatRoomList(generics.ListCreateAPIView):
-    queryset = ChatRoom.objects.all()
-    serializer_class = ChatRoomSerializer
+    serializer_class = ChatRoomUserSerializer
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ChatRoomUser.objects.filter(user=self.request.user,chatroom__is_group = True) #User.objects.exclude(id=self.user.id).exclude(is_superuser=True, is_staff=True)
+
+class ChatRoomUsers(generics.ListCreateAPIView):
+    
+    serializer_class = ChatRoomUserSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return User.objects.exclude(id=self.user.id).exclude(is_superuser=True, is_staff=True)
 
 class MessageList(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
@@ -16,5 +27,5 @@ class MessageList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        chatroom_id = self.kwargs['chatroom_id']
-        return Message.objects.filter(chatroom_id=chatroom_id).order_by('-timestamp')
+        room_id = self.kwargs['room_id']
+        return Message.objects.filter(room_id=room_id).order_by('id')

@@ -3,6 +3,7 @@ from random import randint
 from asyncio import sleep
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from chat.serializers import MessageSerializer
 
 from core.models import ChatRoom, Message, Notifications
 connected_users = {}
@@ -42,12 +43,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room = await self.get_room(self.room_id)
         saved_message = await self.save_message(room, user, message)
         await self.create_notification(room, user, message, saved_message)  # Create notification
-
+        serialized_message = await self.serialize_message(saved_message)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'message': message,
+                'message': serialized_message,
                 'user': user.username
             }
         )
@@ -72,7 +73,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def create_notification(self, room, user, message, saved_message):
         # Create a notification for each user in the room except the sender
-        users_in_room = room.chatroomuser_set.exclude(user=user)
+        users_in_room = room.chat_room_detail.exclude(user=user)
         for recipient in users_in_room:
             if recipient.user.id not in connected_users:
                 Notifications.objects.create(room=room, user=recipient.user, sender=user, content=message, message=saved_message)
+
+    @database_sync_to_async
+    def serialize_message(self, message):
+        return MessageSerializer(message).data

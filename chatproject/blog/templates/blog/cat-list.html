@@ -4,18 +4,16 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        {% for category in page_obj %}
+        {% for blog in page_obj %}
         <div class="col-md-4">
             <div class="card mb-4">
-				<a href="{% url 'blog_list_cat' category.slug %}" class="btn btn-primary">
-					{% if category.featured_image and category.featured_image.url %}
-					<img src="{{ category.featured_image.url }}" class="card-img-top" alt="{{ category.title }}">
-					{% endif %}
-					<div class="card-body">
-						<h5 class="card-title">{{ category.title }}</h5>
-					
-					</div>
-				</a>
+				{% if blog.featured_image and blog.featured_image.url %}
+                <img src="{{ blog.featured_image.url }}" class="card-img-top" alt="{{ blog.title }}">
+				{% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ blog.title }}</h5>
+                    <a href="{% url 'blog_detail' category.slug blog.slug %}" class="btn btn-primary">Read {{ blog.title }}</a>
+                </div>
             </div>
         </div>
         {% endfor %}

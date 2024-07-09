@@ -33,7 +33,7 @@ class ChatRoom(TimestampedModel):
 
 class ChatRoomUser(TimestampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
+    chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='chat_room_detail')
     joined_at = models.DateTimeField(default= timezone.now)
 
     class Meta:

@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from core.models import ChatRoom, ChatRoomUser
 from account.decorators import check_profile_complete
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from rest_framework.authtoken.models import Token
 from core.tasks import mark_notifications_as_read
 
 def get_one_to_one_group_name(user1, user2):
@@ -45,11 +47,14 @@ def create_one_to_one_chat_room(request, username):
 @check_profile_complete
 def chat_room(request, room_id):
     room = get_object_or_404(ChatRoom.objects.filter(deleted_at__isnull=True), id=room_id)
+    token, created = Token.objects.get_or_create(user=request.user)
     messages = room.messages.filter(deleted_at__isnull=True).order_by('created_at')
-    participants = room.chatroomuser_set.all()
+    participants = room.chat_room_detail.all()
     # Trigger the background task to mark notifications as read
     mark_notifications_as_read.delay(request.user.id, room_id)
-    return render(request, 'chat/rooms.html', {'room': room, 'chat_messages': messages, 'participants': participants})
+    response = render(request, 'chat/rooms.html', {'room': room, 'chat_messages': messages, 'participants': participants})
+    response.set_cookie('auth_token', token.key, httponly=False, secure=False)
+    return response
 
 def get_one_to_one_group_name(user1, user2):
     # Combine usernames to create a unique group name

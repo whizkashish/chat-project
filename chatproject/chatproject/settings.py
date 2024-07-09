@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
-from datetime import timedelta
+from dotenv import load_dotenv
 from pathlib import Path
 
+load_dotenv()
 redis_host = os.getenv('REDIS_HOST', 'redis')
 redis_port = os.getenv('REDIS_PORT', '6379')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,13 +41,12 @@ LOGIN_REDIRECT_URL = '/account/'
 INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
-    # 'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
     'drf_spectacular',
     'channels',
     'daphne',
     'django_ckeditor_5',
-    'dal',
-    'dal_select2',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,7 +73,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    # "http://localhost:3000",
+    "http://localhost:3000",
 ]
 
 
